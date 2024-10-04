@@ -1,0 +1,3 @@
+return {
+	["atomic-bomb"] = true,
+}

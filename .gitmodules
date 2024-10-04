@@ -1,0 +1,3 @@
+[submodule "scenarios/castle_TvT/models/zk-static-lib"]
+	path = scenarios/castle_TvT/models/zk-static-lib
+	url = https://github.com/ZwerOxotnik/zk-factorio-static-lib
