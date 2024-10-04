@@ -6,7 +6,7 @@
   "author": "ZwerOxotnik",
   "contact": "Discord: ZwerOxotnik, email: zweroxotnik@gmail.com",
   "homepage": "",
-  "description": "",
+  "description": "WARNING: this is a test version. Some features are missing, not balanced. There are various issues and game crashes.\nPvP/TvT for 2-5 teams + FFA mini game",
   "dependencies": [
     "zk-lib >= 0.16.6",
     "BTeams >= 0.0.21",
