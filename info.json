@@ -12,6 +12,13 @@
     "BTeams >= 0.0.21",
     "EasyAPI >= 0.12.7",
     "DBase >= 0.5.4",
+    "pipe_protection",
+    "blueprint_PvP_protection",
+    "PrivateElectricity",
+    "? my_factory_for_my_team_only",
+    "? protect_my_vehicles",
+    "? turrets_drop_ammo",
+    "? entities_drop_content",
     "(?) gvv"
   ]
 }
