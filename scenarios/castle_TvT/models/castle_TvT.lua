@@ -168,7 +168,7 @@ function M.teleport_pirate_on_random_position(player)
 		pos.y = math.random(-config.center_size * 32 + 16, config.center_size * 32 - 16)
 		local enemy_units = surface.find_enemy_units(pos, 30, player.force)
 		if #enemy_units <= 0 then
-			if player_util.teleport_safely(player, surface, pos) then
+			if player_util.teleport_safely(player, surface, pos) then -- it could teleport near enemies. TODO: improve
 				break
 			end
 		end
@@ -406,6 +406,10 @@ function M.on_entity_destroyed(event)
 	local id = event.registration_number
 	for team_name, team_data in pairs(_teams_data) do
 		if team_data.base_id == id then
+			if remote.interfaces["reclaiming_system"] then
+				remote.call("reclaiming_system", "allow_entity", event.unit_number)
+			end
+
 			local force = team_data.force
 			remote.call("EasyAPI", "remove_team", force.index, true)
 
@@ -786,6 +790,9 @@ function M.check_surface()
 			entity_param.position = force.get_spawn_position(surface)
 			entity_param.force = force
 			local base_entity = surface.create_entity(entity_param)
+			if remote.interfaces["reclaiming_system"] then
+				remote.call("reclaiming_system", "prohibit_entity", base_entity)
+			end
 			base_entity.minable   = false
 			base_entity.rotatable = false
 			local base_pos = base_entity.position

@@ -1,6 +1,6 @@
 {
   "name": "castle_TvT",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "factorio_version": "1.1",
   "title": "Castle TvT [TEST VERSION]",
   "author": "ZwerOxotnik",
@@ -15,6 +15,7 @@
     "pipe_protection",
     "anti_blueprint_spam",
     "PrivateElectricity",
+    "? reclaiming_system >= 0.9.0",
     "? my_factory_for_my_team_only",
     "? protect_my_vehicles",
     "? turrets_drop_ammo",
