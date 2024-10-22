@@ -189,7 +189,7 @@ end
 
 function M.give_start_inventory(player)
 	if not _is_start_inventory_checked then
-		data_util.remove_invalid_prototypes(game.item_prototypes, _start_inventory)
+		data_util.remove_invalid_prototypes(prototypes.item, _start_inventory)
 		_is_start_inventory_checked = true
 	end
 
@@ -285,8 +285,8 @@ function M.teleport_to_battle_zone(player)
 	end
 
 	local battle_surface
-	-- if global.is_round_start then
-		battle_surface = global.mini_battle_zone_surface
+	-- if storage.is_round_start then
+		battle_surface = storage.mini_battle_zone_surface
 	-- else
 	-- 	battle_surface = game.get_surface(1)
 	-- end
@@ -310,7 +310,7 @@ function M.teleport_to_battle_zone(player)
 	end
 
 	if not _is_tank_inventory_checked then
-		data_util.remove_invalid_prototypes(game.item_prototypes, _tank_inventory)
+		data_util.remove_invalid_prototypes(prototypes.item, _tank_inventory)
 		_is_tank_inventory_checked = true
 	end
 
@@ -322,7 +322,7 @@ function M.teleport_to_battle_zone(player)
 	end
 
 	if not _is_mini_battle_inventory_checked then
-		data_util.remove_invalid_prototypes(game.item_prototypes, _mini_battle_inventory)
+		data_util.remove_invalid_prototypes(prototypes.item, _mini_battle_inventory)
 		_is_mini_battle_inventory_checked = true
 	end
 
@@ -338,12 +338,12 @@ end
 
 ---@param event on_robot_built_entity
 function M.on_robot_built_entity(event)
-	local entity = event.created_entity
+	local entity = event.entity
 	if not entity.valid then return end
 
 	local force = entity.force
 	local ent_pos = entity.position
-	for _, zone_data in pairs(global._active_safe_zones) do
+	for _, zone_data in pairs(storage._active_safe_zones) do
 		if zone_data.force ~= force and
 		   is_in_zone(ent_pos, zone_data.safe_zone)
 		then
@@ -360,7 +360,7 @@ function M.on_player_joined_game(event)
 
 	player.print("WARNING: this is a test version. Some features are missing, not balanced. There are various issues and game crashes.", {1, 1, 0})
 
-	if not global.is_round_start then
+	if not storage.is_round_start then
 		M.teleport_to_battle_zone(player)
 		return
 	end
@@ -387,11 +387,11 @@ end
 
 ---@param event EventData.on_built_entity
 function M.on_built_entity(event)
-	local entity = event.created_entity
+	local entity = event.entity
 	if not entity.valid then return end
 
 	local force = entity.force
-	for _, zone_data in pairs(global._active_safe_zones) do
+	for _, zone_data in pairs(storage._active_safe_zones) do
 		if zone_data.force ~= force and
 		   is_in_zone(entity.position, zone_data.safe_zone)
 		then
@@ -401,8 +401,8 @@ function M.on_built_entity(event)
 	end
 end
 
----@param event EventData.on_entity_destroyed
-function M.on_entity_destroyed(event)
+---@param event EventData.on_object_destroyed
+function M.on_object_destroyed(event)
 	local id = event.registration_number
 	for team_name, team_data in pairs(_teams_data) do
 		if team_data.base_id == id then
@@ -455,7 +455,7 @@ function M.on_research_finished(event)
 	local source_force = research.force
 
 	if not _is_disabled_recipes_checked then
-		data_util.remove_invalid_prototypes(game.technology_prototypes, _disabled_recipes)
+		data_util.remove_invalid_prototypes(prototypes.technology, _disabled_recipes)
 		_is_disabled_recipes_checked = true
 	end
 
@@ -502,8 +502,8 @@ end
 function M.set_config_data()
 	local radius = config.center_size + 1 +
 		math.max(config.top_size, config.left_size, config.right_size, config.down_size)
-	global.radius = radius
-	global.end_preparation_tick = game.tick + 100
+	storage.radius = radius
+	storage.end_preparation_tick = game.tick + 100
 end
 
 
@@ -531,7 +531,7 @@ function M.on_game_created_from_scenario(event)
 		width  = 1,
 		height = 1,
 	})
-	global.mini_battle_zone_surface = mini_battle_zone
+	storage.mini_battle_zone_surface = mini_battle_zone
 	surface_util.fill_box_with_tiles(mini_battle_zone, -250, 250, 500, "refined-concrete")
 
 	local reserve_base_surface = game.get_surface("reserve_base_surface")
@@ -642,38 +642,38 @@ function M.on_chunk_generated(event)
 		surface, chunk_x, chunk_y, "out-of-map"
 	) -- a bit buggy
 
-	-- if math.max(math.abs(chunk_x), math.abs(chunk_x)) > global.radius then return end
+	-- if math.max(math.abs(chunk_x), math.abs(chunk_x)) > storage.radius then return end
 	-- game.print(chunk_x .. ", " .. chunk_y)
 end
 
 
 function M.generate_surface()
-	if global.is_round_start then return end
+	if storage.is_round_start then return end
 
-	if not global.chunk_y then
-		global.chunk_x = -global.radius - 1
-		global.chunk_y = -global.radius - 1
+	if not storage.chunk_y then
+		storage.chunk_x = -global.radius - 1
+		storage.chunk_y = -global.radius - 1
 	end
 
 	local surface = game.get_surface(1)
 	local pos = {0, 0}
 	while true do
-		if global.chunk_y > global.radius then
+		if storage.chunk_y > storage.radius then
 			return
 		else
-			global.chunk_x = global.chunk_x + 1
-			if global.chunk_x > global.radius then
-				global.chunk_y = global.chunk_y + 1
-				global.chunk_x = -global.radius - 1
+			storage.chunk_x = storage.chunk_x + 1
+			if storage.chunk_x > storage.radius then
+				storage.chunk_y = storage.chunk_y + 1
+				storage.chunk_x = -global.radius - 1
 			end
 		end
 
 		if not surface.is_chunk_generated(pos) then
-			pos[1] = global.chunk_x * 32 + 15
-			pos[2] = global.chunk_y * 32 + 15
+			pos[1] = storage.chunk_x * 32 + 15
+			pos[2] = storage.chunk_y * 32 + 15
 			surface.request_to_generate_chunks(pos, 1)
 			surface.force_generate_chunk_requests() -- good luck with making it work as you wish
-			global.end_preparation_tick = global.end_preparation_tick + 10
+			storage.end_preparation_tick = storage.end_preparation_tick + 10
 			break
 		end
 	end
@@ -685,7 +685,7 @@ function M.check_active_safe_zones()
 		if player.surface == target_surface then
 			local target = player.vehicle or player
 			local player_force = player.force
-			for _, zone_data in pairs(global._active_safe_zones) do
+			for _, zone_data in pairs(storage._active_safe_zones) do
 				if zone_data.force ~= player_force and
 				   is_in_zone(target.position, zone_data.safe_zone)
 				then
@@ -722,19 +722,19 @@ function M.check_time_safe_zones()
 end
 
 function M.check_surface()
-	if global.is_round_start then return end
-	if game.tick < global.end_preparation_tick then return end
+	if storage.is_round_start then return end
+	if game.tick < storage.end_preparation_tick then return end
 
-	global.is_round_start = true
-	global.round_start_tick = game.tick
+	storage.is_round_start = true
+	storage.round_start_tick = game.tick
 
 	if not _is_default_techs_checked then
-		data_util.remove_invalid_prototypes(game.technology_prototypes, _default_techs)
+		data_util.remove_invalid_prototypes(prototypes.technology, _default_techs)
 		_is_default_techs_checked = true
 	end
 
 	if not _is_disabled_techs_checked then
-		data_util.remove_invalid_prototypes(game.technology_prototypes, _disabled_techs)
+		data_util.remove_invalid_prototypes(prototypes.technology, _disabled_techs)
 		_is_disabled_techs_checked = true
 	end
 
@@ -796,7 +796,7 @@ function M.check_surface()
 			base_entity.minable   = false
 			base_entity.rotatable = false
 			local base_pos = base_entity.position
-			local id = script.register_on_entity_destroyed(base_entity)
+			local id = script.register_on_object_destroyed(base_entity)
 			team_data.base_id = id
 
 			remote.call("EasyAPI", "change_team_base", force, surface, base_pos)
@@ -814,13 +814,13 @@ function M.check_surface()
 	}
 	local center_pos = {x = 0, y = 0}
 	local ores = {}
-	for _, prototype in pairs(game.entity_prototypes) do
+	for _, prototype in pairs(prototypes.entity) do
 		if prototype.type == "resource" and prototype.mineable_properties.products[1].type ~= "fluid" then
 			ores[#ores+1] = prototype.name
 		end
 	end
 	local fluid_sources = {}
-	for _, prototype in pairs(game.entity_prototypes) do
+	for _, prototype in pairs(prototypes.entity) do
 		if prototype.type == "resource" and prototype.mineable_properties.products[1].type == "fluid" then
 			fluid_sources[#fluid_sources+1] = prototype.name
 		end
@@ -856,7 +856,7 @@ function M.check_surface()
 end
 
 function M.unstuck_players()
-	-- if global.round_start_tick > game.tick + 2400 then return end
+	-- if storage.round_start_tick > game.tick + 2400 then return end
 
 	local target_surface = game.get_surface(1)
 	for team_name, team_data in pairs(_teams_data) do
@@ -899,19 +899,19 @@ end
 --#region Pre-game stage
 
 function M.link_data()
-	_teams_data = global._teams_data
-	_active_safe_zones = global._active_safe_zones
+	_teams_data = storage._teams_data
+	_active_safe_zones = storage._active_safe_zones
 end
 
 local function update_global_data()
-	global.round_start_tick = global.round_start_tick or 0
-	global.is_round_start = global.is_round_start or false
-	global._active_safe_zones = global._active_safe_zones or {}
-	global._teams_data = global._teams_data or {}
+	storage.round_start_tick = storage.round_start_tick or 0
+	storage.is_round_start = storage.is_round_start or false
+	storage._active_safe_zones = storage._active_safe_zones or {}
+	storage._teams_data = storage._teams_data or {}
 	if game then
-		global.end_preparation_tick = global.end_preparation_tick or game.tick + 400
+		storage.end_preparation_tick = storage.end_preparation_tick or game.tick + 400
 	else
-		global.end_preparation_tick = global.end_preparation_tick + 400
+		storage.end_preparation_tick = storage.end_preparation_tick + 400
 	end
 	--
 
@@ -930,8 +930,8 @@ local function update_global_data()
 		local surface = game.get_surface(1)
 		surface.clear(true)
 
-		global.is_round_start = false
-		global.end_preparation_tick = game.tick + 400
+		storage.is_round_start = false
+		storage.end_preparation_tick = game.tick + 400
 	end)
 
 	id = remote.call("EasyAPI", "get_event_name", "on_player_joined_team")
@@ -1007,7 +1007,7 @@ M.events = {
 	[defines.events.on_robot_built_entity] = M.on_robot_built_entity,
 	[defines.events.on_built_entity]       = M.on_built_entity,
 	[defines.events.on_research_finished]  = M.on_research_finished,
-	[defines.events.on_entity_destroyed]   = M.on_entity_destroyed,
+	[defines.events.on_object_destroyed]   = M.on_object_destroyed,
 }
 
 
