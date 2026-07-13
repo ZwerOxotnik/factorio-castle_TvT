@@ -551,28 +551,28 @@ function M.on_game_created_from_scenario(event)
 	local turret = reserve_base_surface.create_entity(entity_param)
 	turret.rotatable = false
 	turret.operable  = false
-	turret.minable   = false
+	turret.minable_flag = false
 	turret.insert({name = "uranium-rounds-magazine", count = 200})
 	pos.x =  8
 	pos.y = -8
 	turret = reserve_base_surface.create_entity(entity_param)
 	turret.rotatable = false
 	turret.operable  = false
-	turret.minable   = false
+	turret.minable_flag = false
 	turret.insert({name = "uranium-rounds-magazine", count = 200})
 	pos.x = -8
 	pos.y =  8
 	turret = reserve_base_surface.create_entity(entity_param)
 	turret.rotatable = false
 	turret.operable  = false
-	turret.minable   = false
+	turret.minable_flag = false
 	turret.insert({name = "uranium-rounds-magazine", count = 200})
 	pos.x =  8
 	pos.y =  8
 	turret = reserve_base_surface.create_entity(entity_param)
 	turret.rotatable = false
 	turret.operable  = false
-	turret.minable   = false
+	turret.minable_flag = false
 	turret.insert({name = "uranium-rounds-magazine", count = 200})
 
 	surface_util.fill_box_with_resources_safely(
@@ -793,7 +793,7 @@ function M.check_surface()
 			if remote.interfaces["reclaiming_system"] then
 				remote.call("reclaiming_system", "prohibit_entity", base_entity)
 			end
-			base_entity.minable   = false
+			base_entity.minable_flag = false
 			base_entity.rotatable = false
 			local base_pos = base_entity.position
 			local id = script.register_on_object_destroyed(base_entity)
